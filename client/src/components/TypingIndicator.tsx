@@ -1,15 +1,15 @@
-import React from 'react';
+import { Bot } from 'lucide-react';
 
-export const TypingIndicator: React.FC = () => {
+export const TypingIndicator = () => {
     return (
-        <div className="flex w-full p-4 md:p-6 gap-4 bg-gray-50 border-y border-gray-100">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm">
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s] mx-0.5" />
-                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
+        <div className="flex gap-4 p-4 md:px-8 mb-2 animate-pulse">
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                <Bot size={18} />
             </div>
-            <div className="flex items-center">
-                <span className="text-sm text-gray-500 animate-pulse font-medium">Thinking...</span>
+            <div className="flex items-center gap-1.5 pt-2">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
             </div>
         </div>
     );

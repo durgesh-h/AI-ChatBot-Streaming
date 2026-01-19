@@ -1,85 +1,79 @@
-import React, { useState, type KeyboardEvent, useRef, useEffect } from 'react';
-import { Send, StopCircle } from 'lucide-react';
-import classNames from 'classnames';
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, Sparkles } from 'lucide-react';
 
 interface ChatInputProps {
-    onSend: (content: string) => void;
+    onSendMessage: (content: string) => void;
     isLoading: boolean;
-    disabled?: boolean;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, disabled }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
     const [input, setInput] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const adjustHeight = () => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
-        }
-    };
-
+    // Auto-resize textarea
     useEffect(() => {
-        adjustHeight();
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto'; // Reset height
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+        }
     }, [input]);
 
-    const handleSend = () => {
-        if (input.trim() && !disabled && !isLoading) {
-            onSend(input);
-            setInput('');
-            if (textareaRef.current) {
-                textareaRef.current.style.height = 'auto';
-                textareaRef.current.focus();
-            }
-        }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
         }
     };
 
+    const handleSend = () => {
+        if (!input.trim() || isLoading) return;
+        onSendMessage(input);
+        setInput('');
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+        }
+    };
+
     return (
-        <div className="w-full max-w-3xl mx-auto p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 shadow-sm rounded-t-2xl">
-            <div className="relative flex items-end gap-2 p-2 bg-gray-100 rounded-2xl focus-within:ring-2 focus-within:ring-indigo-100 focus-within:bg-white border border-transparent focus-within:border-indigo-200 transition-all">
+        <div className="w-full max-w-4xl mx-auto p-4 mb-4">
+            <div className={`
+                relative flex items-end gap-2 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-3xl shadow-lg dark:shadow-cyan-900/10 transition-shadow focus-within:ring-2 focus-within:ring-cyan-500/50
+            `}>
+                {/* Text Area */}
                 <textarea
                     ref={textareaRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask anything..."
-                    className="flex-1 max-h-[150px] min-h-[24px] bg-transparent border-0 focus:ring-0 p-2 text-gray-900 placeholder:text-gray-400 resize-none overflow-y-auto leading-relaxed"
-                    maxLength={1000}
-                    disabled={disabled || isLoading}
+                    placeholder="Ask Grok..."
                     rows={1}
+                    className="flex-1 max-h-48 bg-transparent border-none focus:ring-0 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none py-3 px-2 leading-6"
+                    disabled={isLoading}
                 />
 
-                <div className="mb-1 text-xs text-gray-400 font-mono px-2 select-none">
-                    {input.length}/1000
-                </div>
-
+                {/* Send Button */}
                 <button
                     onClick={handleSend}
-                    disabled={!input.trim() || disabled || isLoading}
-                    className={classNames(
-                        "p-2 rounded-xl transition-all",
-                        input.trim() && !disabled && !isLoading
-                            ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200"
-                            : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    )}
+                    disabled={!input.trim() || isLoading}
+                    className={`
+                        p-3 rounded-2xl flex items-center justify-center transition-all duration-200
+                        ${input.trim() && !isLoading
+                            ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25 hover:bg-cyan-400 transform hover:scale-105'
+                            : 'bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed'
+                        }
+                    `}
                 >
                     {isLoading ? (
-                        <StopCircle size={20} className="animate-pulse" /> // Placeholder for cancel if implemented
+                        <Sparkles size={20} className="animate-spin" />
                     ) : (
-                        <Send size={20} className={classNames(input.trim() && "ml-0.5")} />
+                        <Send size={20} className={input.trim() ? 'translate-x-0.5' : ''} />
                     )}
                 </button>
             </div>
-            <div className="text-center mt-2 text-xs text-gray-400">
+
+            <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-3">
                 AI can make mistakes. Consider checking important information.
-            </div>
+            </p>
         </div>
     );
 };

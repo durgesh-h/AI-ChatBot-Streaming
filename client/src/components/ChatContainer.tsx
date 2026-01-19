@@ -1,39 +1,56 @@
 import React, { useEffect, useRef } from 'react';
-import type { Message } from '../types/chat';
 import { ChatMessage } from './ChatMessage';
+import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
+import type { Message } from '../types/chat';
 
 interface ChatContainerProps {
     messages: Message[];
     isTyping: boolean;
+    onSendMessage: (content: string) => void;
+    isLoading: boolean;
 }
 
-export const ChatContainer: React.FC<ChatContainerProps> = ({ messages, isTyping }) => {
-    const bottomRef = useRef<HTMLDivElement>(null);
+export const ChatContainer: React.FC<ChatContainerProps> = ({
+    messages,
+    isTyping,
+    onSendMessage,
+    isLoading
+}) => {
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+        scrollToBottom();
     }, [messages, isTyping]);
 
     return (
-        <div className="flex-1 w-full max-w-3xl mx-auto overflow-y-auto custom-scrollbar pb-4 pt-20 px-0">
-            {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center p-8 opacity-50">
-                    <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl mb-4 shadow-xl" />
-                    <h2 className="text-xl font-bold text-gray-800 mb-2">Welcome to AI Chat</h2>
-                    <p className="text-gray-500 max-w-sm">
-                        Start a conversation with Gemini AI. Responses will stream in real-time.
-                    </p>
-                </div>
-            ) : (
-                <div className="flex flex-col">
-                    {messages.map((msg, index) => (
-                        <ChatMessage key={msg._id || index} message={msg} />
-                    ))}
+        <div className="flex flex-col h-full max-w-4xl mx-auto w-full">
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+                <div className="min-h-full p-4 pb-0 flex flex-col justify-end">
+                    {messages.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-20 opacity-50">
+                            <p>No messages yet.</p>
+                        </div>
+                    ) : (
+                        messages.map((msg, index) => (
+                            <ChatMessage key={msg._id || index} message={msg} />
+                        ))
+                    )}
+
                     {isTyping && <TypingIndicator />}
-                    <div ref={bottomRef} />
+                    <div ref={messagesEndRef} className="h-4" />
                 </div>
-            )}
+            </div>
+
+            {/* Input Area */}
+            <div className="relative z-10 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-900 dark:via-gray-900/90 dark:to-transparent pt-4">
+                <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
+            </div>
         </div>
     );
 };

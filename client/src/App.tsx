@@ -2,21 +2,42 @@ import { useEffect, useState } from 'react';
 import { useSocket } from './hooks/useSocket';
 import { useChat } from './hooks/useChat';
 import { ChatContainer } from './components/ChatContainer';
-import { ChatInput } from './components/ChatInput';
+import { ChatSidebar } from './components/ChatSidebar';
+import { Menu, Sun, Moon, MessageSquare } from 'lucide-react';
 import { ConnectionStatus } from './components/ConnectionStatus';
-import { MessageSquare, Trash2, Moon, Sun } from 'lucide-react';
 
 function App() {
   const { socket, isConnected } = useSocket();
-  const { messages, isLoading, error, sendMessage, isTyping, clearChat } = useChat(socket);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const {
+    chats,
+    activeChatId,
+    messages,
+    isLoading,
+    isTyping,
+    createChat,
+    selectChat,
+    deleteChat,
+    sendMessage
+  } = useChat(socket);
+
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    // Persist theme
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') as 'light' | 'dark' || 'dark'; // Default to dark for Grok vibes
+    }
+    return 'dark';
+  });
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    const root = window.document.documentElement;
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
     }
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -24,55 +45,73 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans selection:bg-indigo-100 selection:text-indigo-900">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-10 flex items-center justify-between px-4 md:px-8 max-w-5xl mx-auto w-full rounded-b-none md:rounded-b-2xl md:top-2 md:shadow-sm transition-colors">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-200 dark:shadow-none">
-            <MessageSquare size={20} className="text-white" />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg text-gray-900 dark:text-white leading-tight">Gemini Chat</h1>
-            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Real-time Streaming</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title="Toggle Theme"
-          >
-            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-          <button
-            onClick={clearChat}
-            className="p-2 text-gray-500 hover:bg-rose-50 hover:text-rose-600 dark:text-gray-400 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 rounded-lg transition-colors"
-            title="Clear Chat"
-          >
-            <Trash2 size={20} />
-          </button>
-          <ConnectionStatus isConnected={isConnected} />
-        </div>
-      </header>
+    <div className="flex h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans overflow-hidden">
 
-      {/* Main Chat Area */}
-      <main className="flex-1 w-full flex flex-col pt-4 relative">
-        <div className="flex-1 w-full overflow-hidden relative flex flex-col pt-16 md:pt-20">
-          <ChatContainer messages={messages} isTyping={isTyping} />
-        </div>
+      {/* Sidebar */}
+      <ChatSidebar
+        chats={chats}
+        activeChatId={activeChatId}
+        onSelectChat={(id) => { selectChat(id); setIsSidebarOpen(false); }}
+        onCreateChat={() => { createChat(); setIsSidebarOpen(false); }}
+        onDeleteChat={deleteChat}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
 
-        {/* Error Toast */}
-        {error && (
-          <div className="absolute top-24 left-1/2 transform -translate-x-1/2 bg-rose-50 border border-rose-200 text-rose-600 px-4 py-2 rounded-lg shadow-lg text-sm font-medium animate-in fade-in slide-in-from-top-4 z-50">
-            Error: {error}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900/50 relative">
+
+        {/* Header */}
+        <header className="h-16 border-b border-gray-200 dark:border-white/5 flex items-center justify-between px-4 bg-white/80 dark:bg-black/20 backdrop-blur-md z-10">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 -ml-2 md:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            >
+              <Menu size={24} />
+            </button>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
+              Grok 2.0
+            </h1>
           </div>
-        )}
 
-        {/* Input Area */}
-        <div className="w-full bg-gradient-to-t from-gray-50 via-gray-50 to-transparent dark:from-gray-900 dark:via-gray-900 pt-10 pb-6 px-4">
-          <ChatInput onSend={sendMessage} isLoading={isLoading} disabled={!isConnected} />
-        </div>
-      </main>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 rounded-full transition-colors"
+            >
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
+            <ConnectionStatus isConnected={isConnected} />
+          </div>
+        </header>
+
+        {/* Chat Area */}
+        <main className="flex-1 relative overflow-hidden flex flex-col">
+          {activeChatId ? (
+            <ChatContainer
+              messages={messages}
+              isTyping={isTyping}
+              onSendMessage={sendMessage}
+              isLoading={isLoading}
+            />
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-500 dark:text-gray-400">
+              <div className="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <MessageSquare className="text-white" size={32} />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome to Grok 2.0</h2>
+              <p className="max-w-md">Select a conversation from the sidebar or start a new session to begin chatting.</p>
+              <button
+                onClick={createChat}
+                className="mt-6 px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-black rounded-full font-medium hover:scale-105 transition-transform"
+              >
+                Start Chatting
+              </button>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { logger } from '../utils/logger';
 
 export const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/chatbot');
+        const conn = await mongoose.connect(process.env.MONGO_URI!, { dbName: "chat_streaming_app" });
         logger.info(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         logger.error('Error connecting to MongoDB:', error);
