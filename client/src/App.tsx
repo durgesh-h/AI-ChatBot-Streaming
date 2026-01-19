@@ -26,9 +26,9 @@ function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     // Persist theme
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') as 'light' | 'dark' || 'dark'; // Default to dark for Grok vibes
+      return localStorage.getItem('theme') as 'light' | 'dark' || 'light';
     }
-    return 'dark';
+    return 'light';
   });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

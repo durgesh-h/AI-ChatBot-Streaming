@@ -3,17 +3,20 @@ import Message from '../models/Message';
 import Chat from '../models/Chat';
 import { streamAIResponse } from '../services/aiService';
 import { logger } from '../utils/logger';
+import { generateChatTitle } from '../utils/titleGenerator';
 
 export const setupChatHandlers = (io: Server) => {
     io.on('connection', (socket: Socket) => {
-        logger.info(`User connected: ${socket.id}`);
+        const userId = socket.handshake.query.userId as string;
+        logger.info(`User connected: ${socket.id}, userId: ${userId}`);
 
         // --- Chat Session Management ---
 
         // Create a new chat
-        socket.on('create_chat', async (title: string = 'New Chat') => {
+        socket.on('create_chat', async () => {
             try {
-                const chat = await Chat.create({ title });
+                if (!userId) return;
+                const chat = await Chat.create({ userId, title: 'New Chat' });
                 socket.emit('chat_created', chat);
             } catch (error) {
                 logger.error('Error creating chat:', error);
@@ -21,10 +24,11 @@ export const setupChatHandlers = (io: Server) => {
             }
         });
 
-        // List all chats
+        // List chats (User Specific)
         socket.on('list_chats', async () => {
             try {
-                const chats = await Chat.find().sort({ createdAt: -1 });
+                if (!userId) return;
+                const chats = await Chat.find({ userId }).sort({ createdAt: -1 });
                 socket.emit('chats_list', chats);
             } catch (error) {
                 logger.error('Error listing chats:', error);
@@ -34,8 +38,15 @@ export const setupChatHandlers = (io: Server) => {
         // Join a chat (load history)
         socket.on('join_chat', async (chatId: string) => {
             try {
-                socket.join(chatId); // Socket.io room for the chat
-                const history = await Message.find({ chatId }).sort({ createdAt: 1 }); // Send chronological
+                // Verify ownership
+                const chat = await Chat.findOne({ _id: chatId, userId });
+                if (!chat) {
+                    socket.emit('error', 'Chat not found');
+                    return;
+                }
+
+                socket.join(chatId);
+                const history = await Message.find({ chatId }).sort({ createdAt: 1 });
                 socket.emit('chat_history', { chatId, messages: history });
             } catch (error) {
                 logger.error(`Error joining chat ${chatId}:`, error);
@@ -43,15 +54,15 @@ export const setupChatHandlers = (io: Server) => {
             }
         });
 
-        // Delete a chat
+        // Delete a chat (User Specific)
         socket.on('delete_chat', async (chatId: string) => {
             try {
-                await Chat.findByIdAndDelete(chatId);
+                await Chat.findOneAndDelete({ _id: chatId, userId });
                 await Message.deleteMany({ chatId });
                 socket.emit('chat_deleted', chatId);
 
-                // Refresh list for everyone (simplified)
-                const chats = await Chat.find().sort({ createdAt: -1 });
+                // Refresh list
+                const chats = await Chat.find({ userId }).sort({ createdAt: -1 });
                 socket.emit('chats_list', chats);
             } catch (error) {
                 logger.error('Error deleting chat:', error);
@@ -62,8 +73,8 @@ export const setupChatHandlers = (io: Server) => {
         // Delete a specific message
         socket.on('delete_message', async ({ messageId, chatId }: { messageId: string, chatId: string }) => {
             try {
+                // Optional: verify chat ownership first but simplistic for now
                 await Message.findByIdAndDelete(messageId);
-                // Notify the client in the chat room (or just the sender, but room is better for sync)
                 io.to(chatId).emit('message_deleted', messageId);
             } catch (error) {
                 logger.error('Error deleting message:', error);
@@ -81,7 +92,23 @@ export const setupChatHandlers = (io: Server) => {
                 }
 
                 // Save user message
-                await Message.create({ chatId, role: 'user', content });
+                const userMsg = await Message.create({ chatId, role: 'user', content });
+
+                // Check if we need to rename the chat (if it's the first message or title is New Chat)
+                // Optimization: checking message count is one way, or just check title.
+                const chat = await Chat.findById(chatId);
+                if (chat && chat.title === 'New Chat') {
+                    // Generate title async
+                    generateChatTitle(content).then(async (newTitle) => {
+                        chat.title = newTitle;
+                        await chat.save();
+                        // Notify client of title update
+                        // We can emit 'chats_list' again OR a specific 'chat_updated' event
+                        // Let's just emit 'chat_updated' to be efficient or re-emit list
+                        const chats = await Chat.find({ userId }).sort({ createdAt: -1 });
+                        socket.emit('chats_list', chats); // easiest for now
+                    });
+                }
 
                 // Start streaming AI response
                 socket.emit('ai_stream_start', { chatId });

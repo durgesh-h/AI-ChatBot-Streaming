@@ -33,7 +33,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
             {/* Sidebar Container */}
             <div className={`
-                fixed inset-y-0 left-0 z-30 w-72 bg-gray-100 dark:bg-gray-900/95 border-r border-gray-200 dark:border-white/10 backdrop-blur-xl transform transition-transform duration-300 ease-in-out
+                fixed inset-y-0 left-0 z-30 w-72 bg-gray-50 dark:bg-zinc-950 border-r border-gray-200 dark:border-white/5 backdrop-blur-xl transform transition-transform duration-300 ease-in-out
                 md:relative md:translate-x-0
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
@@ -43,15 +43,15 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                     <div className="p-4">
                         <button
                             onClick={onCreateChat}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cyan-600/10 hover:bg-cyan-600/20 dark:bg-cyan-500/10 dark:hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30 rounded-xl transition-all duration-200 group"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white hover:bg-white/50 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-white/10 rounded-xl transition-all duration-200 shadow-sm hover:shadow"
                         >
-                            <Plus size={20} className="group-hover:scale-110 transition-transform" />
-                            <span className="font-semibold">New Session</span>
+                            <Plus size={20} />
+                            <span className="font-semibold text-sm">New Session</span>
                         </button>
                     </div>
 
                     {/* Chat List */}
-                    <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-white/10 scrollbar-track-transparent">
                         {chats.map(chat => (
                             <div
                                 key={chat._id}
@@ -59,12 +59,12 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                                 className={`
                                     group relative flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer transition-all duration-200
                                     ${activeChatId === chat._id
-                                        ? 'bg-white dark:bg-white/10 text-cyan-700 dark:text-white border border-gray-200 dark:border-white/5 shadow-sm'
-                                        : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200 border border-transparent'
+                                        ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm ring-1 ring-gray-200 dark:ring-white/10'
+                                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-900 hover:text-gray-900 dark:hover:text-gray-200'
                                     }
                                 `}
                             >
-                                <MessageSquare size={18} className={activeChatId === chat._id ? 'text-cyan-600 dark:text-cyan-400' : 'opacity-50'} />
+                                <MessageSquare size={18} className={activeChatId === chat._id ? 'text-gray-900 dark:text-white' : 'opacity-40'} />
 
                                 <div className="flex-1 min-w-0">
                                     <p className="truncate text-sm font-medium">
@@ -77,7 +77,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
                                 <button
                                     onClick={(e) => onDeleteChat(chat._id, e)}
-                                    className="opacity-0 group-hover:opacity-100 p-1.5 text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 rounded-md transition-all"
+                                    className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-all"
                                     title="Delete Chat"
                                 >
                                     <Trash2 size={14} />
@@ -86,7 +86,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                         ))}
 
                         {chats.length === 0 && (
-                            <div className="text-center text-gray-500 mt-10 text-sm">
+                            <div className="text-center text-gray-400 mt-10 text-sm">
                                 <p>No history yet.</p>
                                 <p>Start a new chat!</p>
                             </div>
@@ -94,7 +94,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                     </div>
 
                     {/* Footer / Mobile Close */}
-                    <div className="p-4 border-t border-gray-200 dark:border-white/10 md:hidden">
+                    <div className="p-4 border-t border-gray-200 dark:border-white/5 md:hidden">
                         <button
                             onClick={onClose}
                             className="w-full flex items-center justify-center gap-2 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"

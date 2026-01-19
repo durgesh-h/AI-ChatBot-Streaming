@@ -37,7 +37,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
     return (
         <div className="w-full max-w-4xl mx-auto p-4 mb-4">
             <div className={`
-                relative flex items-end gap-2 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-3xl shadow-lg dark:shadow-cyan-900/10 transition-shadow focus-within:ring-2 focus-within:ring-cyan-500/50
+                relative flex items-end gap-2 p-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-gray-200 dark:focus-within:ring-zinc-700
             `}>
                 {/* Text Area */}
                 <textarea
@@ -58,8 +58,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
                     className={`
                         p-3 rounded-2xl flex items-center justify-center transition-all duration-200
                         ${input.trim() && !isLoading
-                            ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25 hover:bg-cyan-400 transform hover:scale-105'
-                            : 'bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed'
+                            ? 'bg-gray-900 dark:bg-white text-white dark:text-black hover:opacity-90 transform hover:scale-105'
+                            : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-600 cursor-not-allowed'
                         }
                     `}
                 >
