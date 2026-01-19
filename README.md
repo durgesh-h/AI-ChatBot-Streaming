@@ -63,7 +63,7 @@ Create a `.env` file in the root structure (or inside server/client if preferred
 
 **Server (.env)**
 ```env
-PORT=5000
+PORT=4000
 MONGO_URI=mongodb://localhost:27017/chatbot
 GEMINI_API_KEY=your_gemini_api_key_here
 CLIENT_URL=http://localhost:5173
