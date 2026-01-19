@@ -45,7 +45,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask Grok..."
+                    placeholder="Ask AI Bot..."
                     rows={1}
                     className="flex-1 max-h-48 bg-transparent border-none focus:ring-0 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none py-3 px-2 leading-6"
                     disabled={isLoading}

@@ -1,14 +1,15 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Copy, Check, Bot, User } from 'lucide-react';
+import { Copy, Check, Bot, User, Trash2 } from 'lucide-react';
 import type { Message } from '../types/chat';
 
 interface ChatMessageProps {
     message: Message;
+    onDelete: (messageId: string) => void;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onDelete }) => {
     const isAi = message.role === 'assistant';
     const [copied, setCopied] = React.useState(false);
 
@@ -36,7 +37,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {isAi ? 'Grok' : 'You'}
+                        {isAi ? 'AI Bot' : 'You'}
                     </span>
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                         {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -72,17 +73,29 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 </div>
 
                 {/* Footer / Actions */}
-                {isAi && (
-                    <div className="flex items-center gap-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {/* Copy Button (AI only) */}
+                    {isAi && (
                         <button
                             onClick={handleCopy}
-                            className="p-1.5 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-md transition-colors"
+                            className="p-1.5 text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 rounded-md transition-colors"
                             title="Copy response"
                         >
                             {copied ? <Check size={14} /> : <Copy size={14} />}
                         </button>
-                    </div>
-                )}
+                    )}
+
+                    {/* Delete Button (Both) */}
+                    {message._id && (
+                        <button
+                            onClick={() => onDelete(message._id!)}
+                            className="p-1.5 text-gray-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors"
+                            title="Delete message"
+                        >
+                            <Trash2 size={14} />
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );

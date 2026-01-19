@@ -14,9 +14,12 @@ function App() {
     messages,
     isLoading,
     isTyping,
+    error,
     createChat,
     selectChat,
     deleteChat,
+    deleteMessage,
+    dismissError,
     sendMessage
   } = useChat(socket);
 
@@ -71,7 +74,7 @@ function App() {
               <Menu size={24} />
             </button>
             <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">
-              Grok 2.0
+              AI Bot
             </h1>
           </div>
 
@@ -86,6 +89,19 @@ function App() {
           </div>
         </header>
 
+        {/* Error Toast */}
+        {error && (
+          <div className="fixed top-20 right-4 z-50 bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-2 rounded-lg backdrop-blur-md flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+            <span>{error}</span>
+            <button
+              onClick={dismissError}
+              className="hover:text-red-400"
+            >
+              <MessageSquare size={14} className="rotate-45" /> {/* Use X icon ideally, reusing for now */}
+            </button>
+          </div>
+        )}
+
         {/* Chat Area */}
         <main className="flex-1 relative overflow-hidden flex flex-col">
           {activeChatId ? (
@@ -94,13 +110,14 @@ function App() {
               isTyping={isTyping}
               onSendMessage={sendMessage}
               isLoading={isLoading}
+              onDeleteMessage={deleteMessage}
             />
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-500 dark:text-gray-400">
               <div className="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
                 <MessageSquare className="text-white" size={32} />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome to Grok 2.0</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome to AI Bot</h2>
               <p className="max-w-md">Select a conversation from the sidebar or start a new session to begin chatting.</p>
               <button
                 onClick={createChat}

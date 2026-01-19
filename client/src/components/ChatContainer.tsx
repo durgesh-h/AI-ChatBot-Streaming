@@ -9,13 +9,15 @@ interface ChatContainerProps {
     isTyping: boolean;
     onSendMessage: (content: string) => void;
     isLoading: boolean;
+    onDeleteMessage: (messageId: string) => void;
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
     messages,
     isTyping,
     onSendMessage,
-    isLoading
+    isLoading,
+    onDeleteMessage
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -38,7 +40,11 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                         </div>
                     ) : (
                         messages.map((msg, index) => (
-                            <ChatMessage key={msg._id || index} message={msg} />
+                            <ChatMessage
+                                key={msg._id || index}
+                                message={msg}
+                                onDelete={onDeleteMessage}
+                            />
                         ))
                     )}
 

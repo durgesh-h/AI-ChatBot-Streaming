@@ -59,6 +59,17 @@ export const setupChatHandlers = (io: Server) => {
             }
         });
 
+        // Delete a specific message
+        socket.on('delete_message', async ({ messageId, chatId }: { messageId: string, chatId: string }) => {
+            try {
+                await Message.findByIdAndDelete(messageId);
+                // Notify the client in the chat room (or just the sender, but room is better for sync)
+                io.to(chatId).emit('message_deleted', messageId);
+            } catch (error) {
+                logger.error('Error deleting message:', error);
+            }
+        });
+
 
         // --- Messaging ---
 
