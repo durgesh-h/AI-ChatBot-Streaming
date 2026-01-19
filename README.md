@@ -1,104 +1,116 @@
-# Real-Time AI Chatbot with Streaming
+# AI Bot - Future Ready Chat Interface
 
-A production-grade Real-Time AI Chatbot capable of streaming responses token-by-token using Google Gemini API, Socket.IO, and React.
+A professional, production-grade AI Chatbot application featuring real-time streaming, smart personalization, and a minimalist design system. Built with modern web technologies to deliver a premium user experience.
 
-## 🚀 Features
+## ✨ Features
 
-- **Real-time Streaming**: AI responses are streamed token-by-token via WebSockets.
-- **Modern UI**: Built with React, Vite, and Tailwind CSS.
-- **Message Persistence**: Chat history is saved in MongoDB.
-- **Rich Text Support**: Markdown rendering for AI responses.
-- **Typing Indicators**: Visual feedback while AI is generating.
-- **Responsive Design**: Mobile-friendly interface.
-- **Theme Support**: Dark/Light mode toggle.
-- **Bonus Features**: Copy message to clipboard, Clear chat history.
+### 🧠 Core Intelligence
+- **Real-Time AI Streaming**: Experience low-latency, token-by-token responses powered by the Gemini API.
+- **Smart Chat Titles**: Chats are automatically renamed based on context using AI summarization.
+- **Markdown Support**: Rich text rendering for code blocks, tables, lists, and formatting.
+
+### 🎨 Premium UI/UX
+- **Minimalist Design System**: A refined, professional aesthetic with clean typography and subtle interactions.
+- **Adaptive Theming**: Seamless Light/Dark mode resilience with persistent preference.
+- **Glassmorphism Effects**: Modern translucent UI elements with blur effects.
+- **Responsive Layout**: Fully responsive sidebar drawer for mobile devices.
+- **Smooth Animations**: Transitions for messages, sidebar, and interactions.
+
+### 🛡️ Privacy & Management
+- **Browser-Based Isolation**: Chat sessions are isolated per browser/device for enhanced privacy in shared environments.
+- **Session Management**: Create, switch, and delete multiple chat sessions effortlessly.
+- **Granular Control**: Delete specific messages or entire chat histories.
+
+### 🛠️ Technical Highlights
+- **WebSocket Architecture**: Full duplex communication via Socket.IO.
+- **Persistent Storage**: Robust data retention using MongoDB.
+- **Device Fingerprinting**: UUID-based device identification for session handling.
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 - **Framework**: React 18 + Vite
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Real-time**: Socket.IO Client
+- **Styling**: Tailwind CSS (v4 Optimized)
+- **State/Socket**: Custom Hooks
 - **Icons**: Lucide React
 
 ### Backend
 - **Runtime**: Node.js
-- **Framework**: Express.js
-- **Language**: TypeScript
+- **Server**: Express.js
 - **Database**: MongoDB (Mongoose)
-- **Real-time**: Socket.IO
-- **AI**: Google Gemini API
+- **Communication**: Socket.IO
+- **AI Engine**: Google Gemini
 
 ## 📂 Project Structure
 
-```
-/root
-  ├── client/        # Frontend (React + Vite)
-  ├── server/        # Backend (Express + Socket.IO)
-  ├── .env.example   # Environment variables template
-  └── README.md      # Project documentation
+```bash
+/
+├── client/                 # React Frontend
+│   ├── src/
+│   │   ├── components/     # UI Components (Sidebar, Chat, Input)
+│   │   ├── hooks/          # Logic Hooks (useChat, useSocket)
+│   │   └── types/          # TypeScript Interfaces
+├── server/                 # Node/Express Backend
+│   ├── src/
+│   │   ├── models/         # Mongoose Schemas (Chat, Message)
+│   │   ├── sockets/        # Socket Event Handlers
+│   │   └── services/       # AI Integration Services
+└── README.md               # Documentation
 ```
 
 ## ⚙️ Setup Instructions
 
 ### Prerequisites
 - Node.js (v18+)
-- MongoDB (running locally or ATLAS URI)
+- MongoDB (Local or Atlas)
 - Google Gemini API Key
 
-### 1. Clone & Install
+### 1. Installation
 ```bash
-# Install Server Dependencies
+# Backend
 cd server
 npm install
 
-# Install Client Dependencies
+# Frontend
 cd ../client
 npm install
 ```
 
-### 2. Configure Environment
-Create a `.env` file in the root structure (or inside server/client if preferred, but the project is set up to read from root or defaults).
-
-**Server (.env)**
+### 2. Configuration
+Create a `.env` file in the root directory:
 ```env
+# Server
 PORT=4000
 MONGO_URI=mongodb://localhost:27017/chatbot
-GEMINI_API_KEY=your_gemini_api_key_here
-CLIENT_URL=http://localhost:5173
+GEMINI_API_KEY=your_key_here
+
+# Client
+VITE_SOCKET_URL=http://localhost:4000
 ```
-*Note: Ensure to place the `.env` file where the server can read it, or update `server/src/index.ts` path if needed. Currently `dotenv.config()` is called in server.*
 
-### 3. Run the Application
+### 3. Launch
+Run the application in development mode:
 
-**Start Backend (Terminal 1)**
+**Terminal 1 (Backend):**
 ```bash
 cd server
 npm run dev
 ```
 
-**Start Frontend (Terminal 2)**
+**Terminal 2 (Frontend):**
 ```bash
 cd client
 npm run dev
 ```
 
-Visit `http://localhost:5173` to chat!
+The app will be available at `http://localhost:5173`.
 
-## 🧪 Verification
+## 🧪 Quick Test
+1.  **Open App**: Confirm it starts in Light Mode with a clean "New Session" button.
+2.  **Send Message**: Type "Hello". Watch the streaming response.
+3.  **Check Title**: Notice the chat title change from "New Chat" to "Greetings" (or similar).
+4.  **New Window**: Open Incognito mode. Verify you get a fresh, isolated workspace.
 
-1. **Connect**: Open the app, check the "Connected" badge (Green).
-2. **Chat**: Type a message and send.
-3. **Stream**: Watch the AI response stream in real-time.
-4. **Persist**: Refresh the page to see saved history.
-5. **Theme**: Toggle Dark/Light mode using the moon/sun icon.
-
-## 📝 Known Limitations
-- "Clear Chat" clears history globally (simple implementation).
-- No user authentication (public chat).
-
-## 🔮 Future Improvements
-- User Authentication (Auth0 / Firebase).
-- Multiple chat sessions/threads.
-- File attachments / Image inputs.
+---
+*Built with precision and attention to detail.*
