@@ -113,7 +113,7 @@ The app will be available at `http://localhost:5173`.
 4.  **New Window**: Open Incognito mode. Verify you get a fresh, isolated workspace.
 
 ## 🎥 Demo & Assignment Info
-- **Demo Video**: [Watch on Loom](https://www.loom.com/share/dcc4dcc5883c417daa1c8de95f998)
+- **Demo Video**: [Watch on Loom](https://www.loom.com/share/7e5efd69cc0e495b8530c8c070e32977)
 
 - **Time Spent On the Assignment**: Approx 1.5 days
 
